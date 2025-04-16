@@ -1,0 +1,29 @@
+name: MPVPN Prebuild Image
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Packer
+        uses: hashicorp/setup-packer@v2
+
+      - name: Install QEMU
+        run: sudo apt-get update && sudo apt-get install -y qemu-system-x86 qemu-utils
+
+      - name: Build Image
+        working-directory: ./packer
+        run: packer build ubuntu-minimal.pkr.hcl
+
+      - name: Upload Image Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mpvpn-ubuntu-image
+          path: ./packer/output-qcow2/*.qcow2
