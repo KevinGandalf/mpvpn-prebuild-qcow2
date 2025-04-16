@@ -30,8 +30,8 @@ jobs:
         run: |
           PACKER_VERSION="1.10.1"
           wget https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip
-          unzip packer_${PACKER_VERSION}_linux_amd64.zip
-          sudo install packer /usr/local/bin/
+          unzip -o packer_${PACKER_VERSION}_linux_amd64.zip  # -o flag for overwrite without prompt
+          sudo install -m 0755 packer /usr/local/bin/
           packer version
 
       - name: Verify QEMU installation
