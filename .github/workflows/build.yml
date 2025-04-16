@@ -27,17 +27,17 @@ jobs:
             unzip
 
       - name: Install Packer manually
-  run: |
-    PACKER_VERSION="1.10.1"
-    # Remove any existing files/directories
-    rm -f packer
-    rm -rf packer/  # In case it's a directory
-    rm -f packer_${PACKER_VERSION}_linux_amd64.zip
-    
-    wget https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip
-    unzip -o packer_${PACKER_VERSION}_linux_amd64.zip
-    sudo install -m 0755 packer /usr/local/bin/
-    packer version
+        run: |
+          PACKER_VERSION="1.10.1"
+          # Remove any existing files/directories
+          rm -f packer
+          rm -rf packer/  # In case it's a directory
+          rm -f packer_${PACKER_VERSION}_linux_amd64.zip
+          
+          wget https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip
+          unzip -o packer_${PACKER_VERSION}_linux_amd64.zip
+          sudo install -m 0755 packer /usr/local/bin/
+          packer version
 
       - name: Verify QEMU installation
         run: |
