@@ -1,29 +1,41 @@
-name: MPVPN Prebuild Image
+name: Build Ubuntu Minimal ISO with Packer
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      # Schritt 1: Checkout den Code
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      - name: Set up Packer
-        uses: hashicorp/setup-packer@v2
+      # Schritt 2: Installiere Packer
+      - name: Install Packer
+        run: |
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+          sudo apt-add-repository "deb https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+          sudo apt-get update
+          sudo apt-get install packer
 
-      - name: Install QEMU
-        run: sudo apt-get update && sudo apt-get install -y qemu-system-x86 qemu-utils
+      # Schritt 3: Installiere QEMU und andere notwendige Pakete
+      - name: Install QEMU and dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-system-x86 qemu-utils
 
-      - name: Build Image
-        working-directory: ./packer
+      # Schritt 4: Installiere Packer QEMU Plugin
+      - name: Install Packer QEMU Plugin
+        run: |
+          packer plugin install qemu
+
+      # Schritt 5: Build die Ubuntu-Minimal-ISO mit Packer
+      - name: Build Ubuntu Minimal ISO with Packer
         run: packer build ubuntu-minimal.pkr.hcl
-
-      - name: Upload Image Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: mpvpn-ubuntu-image
-          path: ./packer/output-qcow2/*.qcow2
