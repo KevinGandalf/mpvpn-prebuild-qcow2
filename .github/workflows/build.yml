@@ -1,4 +1,4 @@
-name: Build Ubuntu Minimal ISO with Packer
+name: Build Ubuntu Minimal Image with Packer
 
 on:
   push:
@@ -13,29 +13,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Schritt 1: Checkout den Code
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3  # Updated to v3
 
-      # Schritt 2: Installiere Packer
-      - name: Install Packer
+      - name: Install dependencies
         run: |
-          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-          sudo apt-add-repository "deb https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-          sudo apt-get update
-          sudo apt-get install packer
+          sudo apt-get update -y
+          sudo apt-get install -y \
+            packer \
+            qemu-system-x86 \
+            qemu-utils \
+            cloud-image-utils
+        shell: bash
 
-      # Schritt 3: Installiere QEMU und andere notwendige Pakete
-      - name: Install QEMU and dependencies
+      - name: Verify QEMU installation
         run: |
-          sudo apt-get update
-          sudo apt-get install -y packer qemu-system-x86
+          qemu-system-x86_64 --version
+          qemu-img --version
 
-      # Schritt 4: Installiere Packer QEMU Plugin
-      - name: Install Packer QEMU Plugin
+      - name: Run Packer build
         run: |
-          packer plugin install qemu
-
-      # Schritt 5: Build die Ubuntu-Minimal-ISO mit Packer
-      - name: Build Ubuntu Minimal ISO with Packer
-        run: packer build ubuntu-minimal.pkr.hcl
+          packer init .
+          packer build ubuntu-minimal.pkr.hcl
