@@ -14,17 +14,25 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3  # Updated to v3
+        uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Install QEMU and dependencies
         run: |
           sudo apt-get update -y
           sudo apt-get install -y \
-            packer \
             qemu-system-x86 \
             qemu-utils \
-            cloud-image-utils
-        shell: bash
+            cloud-image-utils \
+            wget \
+            unzip
+
+      - name: Install Packer manually
+        run: |
+          PACKER_VERSION="1.10.1"
+          wget https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip
+          unzip packer_${PACKER_VERSION}_linux_amd64.zip
+          sudo install packer /usr/local/bin/
+          packer version
 
       - name: Verify QEMU installation
         run: |
